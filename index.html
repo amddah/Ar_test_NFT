@@ -1,7 +1,7 @@
 <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
 
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-<script>
+<!-- <script>
   window.onload = function() {
     AFRAME.registerComponent("videohandler", {
       init: function() {
@@ -26,7 +26,7 @@
       }
     });
   };
-</script>
+</script> -->
 
 <style>
   .arjs-loader {
@@ -83,10 +83,10 @@
       smoothtolerance="0.01"
       smooththreshold="5"
     >
-      <a-video src="#vid" rotation="-90 0 0" position="50 150 -100" width="300" height="175">
+<!--       <a-video src="#vid" rotation="-90 0 0" position="50 150 -100" width="300" height="175">
       </a-video>
-
-    
+ -->
+     <a-box position="0 0.5 0" material="color: red;">
     </a-nft>
     <a-entity camera></a-entity>
   </a-scene>
