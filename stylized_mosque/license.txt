@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stylized Mosque
+* source:	https://sketchfab.com/3d-models/stylized-mosque-f18722b66d1e459b94e189fb3f41781f
+* author:	ChrisCLP (https://sketchfab.com/ChrisCLP)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stylized Mosque" (https://sketchfab.com/3d-models/stylized-mosque-f18722b66d1e459b94e189fb3f41781f) by ChrisCLP (https://sketchfab.com/ChrisCLP) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
