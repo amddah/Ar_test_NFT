@@ -1,0 +1,396 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.3644018173217773,
+        1.3817697763442993,
+        4.2702741622924805
+      ],
+      "min": [
+        -1.344719648361206,
+        -1.343212366104126,
+        -3.5507073402404785
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 786384,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9999725818634033,
+        0.9999422430992126,
+        0.9999948143959045
+      ],
+      "min": [
+        -0.9999984502792358,
+        -0.9999757409095764,
+        -0.9934249520301819
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9977865219116211,
+        0.9990811944007874
+      ],
+      "min": [
+        0.000732421875,
+        0.0022052719723433256
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 311067,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1572768,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.3468810319900513,
+        1.4284775257110596,
+        3.825850248336792
+      ],
+      "min": [
+        -1.3474366664886475,
+        -1.340632677078247,
+        -5.445097923278809
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 2359152,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.999998927116394,
+        0.9999719262123108,
+        0.9998709559440613
+      ],
+      "min": [
+        -0.9999057054519653,
+        -0.9996170401573181,
+        -0.9998306632041931
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 524256,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9977903366088867,
+        0.9992674589157104
+      ],
+      "min": [
+        0.000732421875,
+        0.0022087886463850737
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 1244268,
+      "componentType": 5125,
+      "count": 281700,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3145536,
+      "componentType": 5126,
+      "count": 1190,
+      "max": [
+        1.2473728656768799,
+        1.373707890510559,
+        3.3518178462982178
+      ],
+      "min": [
+        -1.3387420177459717,
+        -0.3567237854003906,
+        -1.9467798471450806
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3159816,
+      "componentType": 5126,
+      "count": 1190,
+      "max": [
+        0.9997384548187256,
+        0.993486762046814,
+        0.9955742359161377
+      ],
+      "min": [
+        -0.9885759353637695,
+        -0.9866452217102051,
+        -0.9114060997962952
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1048512,
+      "componentType": 5126,
+      "count": 1190,
+      "max": [
+        0.9826247692108154,
+        0.995932936668396
+      ],
+      "min": [
+        0.000732421875,
+        0.002213258994743228
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 2371068,
+      "componentType": 5125,
+      "count": 2847,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "FUD-UJEP (https://sketchfab.com/FUD-UJEP)",
+      "license": "COPYRIGHT TO FUD-UJEP",
+      "source": "https://sketchfab.com/3d-models/marrakech-tower-b70c5c9ad1ab4ebfab108e02b5e165be",
+      "title": "Marrakech-tower"
+    },
+    "generator": "Sketchfab-15.24.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 2382456,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1058032,
+      "byteOffset": 2382456,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 3174096,
+      "byteOffset": 3440488,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 6614584,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_unlit"
+  ],
+  "images": [
+    {
+      "uri": "textures/Marrakech-tower_u1_v1_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_unlit": {}
+      },
+      "name": "Marrakech-tower_u1_v1",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Marrakech-tower_Marrakech-tower_u1_v1_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Marrakech-tower_Marrakech-tower_u1_v1_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Marrakech-tower_Marrakech-tower_u1_v1_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        0.9996815919876099,
+        -0.02523377351462841,
+        -5.603023270823384e-18,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.02523377351462841,
+        0.9996815919876099,
+        2.2197390414371518e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Marrakech-tower.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        6
+      ],
+      "matrix": [
+        7.549789959870878e-06,
+        0.0,
+        99.9999999999997,
+        0.0,
+        99.99999999999838,
+        -1.6292067961387602e-05,
+        -7.549789954319763e-06,
+        0.0,
+        1.6292067972489832e-05,
+        99.99999999999866,
+        -1.2212453270876722e-12,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Marrakech-tower"
+    },
+    {
+      "mesh": 0,
+      "name": "Marrakech-tower_Marrakech-tower_u1_v1_0"
+    },
+    {
+      "mesh": 1,
+      "name": "Marrakech-tower_Marrakech-tower_u1_v1_0"
+    },
+    {
+      "mesh": 2,
+      "name": "Marrakech-tower_Marrakech-tower_u1_v1_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
