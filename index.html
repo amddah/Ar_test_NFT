@@ -4,10 +4,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+     <script src="./gestion_event/gesture-detector.js"></script>
+    <script src="./gestion_event/gesture-handler.js"></script>
   </head>
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: ./src/targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: ./src/targets.mind;"
+      vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
+       gesture-detector
+        id="scene"
+      >
       <a-assets>
             <a-asset-item id="koutoubia" src="./stylized_mosque/scene.gltf"></a-asset-item>
              <a-asset-item id="tree-obj" src="./bab dokala/remparts+5-1-1.obj"></a-asset-item>
@@ -21,6 +27,8 @@
         gltf-model="./marrakech-tower/scene.gltf"
         scale="0.3 0.3 0.3"
        rotation="90 0 0 " position="0 0 0"
+        class="clickable"
+          gesture-handler
       ></a-entity>
       </a-entity>
         <a-entity mindar-image-target="targetIndex: 1">
