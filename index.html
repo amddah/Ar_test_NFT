@@ -4,56 +4,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-     <script src="./gestion_event/gesture-detector.js"></script>
-    <script src="./gestion_event/gesture-handler.js"></script>
-  </head>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+	const sceneEl = document.querySelector('a-scene');
+	let arSystem;
+	sceneEl.addEventListener('loaded', function () {
+	  arSystem = sceneEl.systems["mindar-image-system"];
+	});
+	const exampleTarget = document.querySelector('#example-target');
+	const examplePlane = document.querySelector('#example-plane');
+	const startButton = document.querySelector("#example-start-button");
+	const stopButton = document.querySelector("#example-stop-button");
+	const pauseButton = document.querySelector("#example-pause-button");
+	const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
+	const unpauseButton = document.querySelector("#example-unpause-button");
+	startButton.addEventListener('click', () => {
+	  console.log("start");
+	  arSystem.start(); // start AR 
+	});
+	stopButton.addEventListener('click', () => {
+	  arSystem.stop(); // stop AR 
+	});
+	pauseButton.addEventListener('click', () => {
+	  arSystem.pause(); // pause AR, pause video
+	});
+	pauseKeepVideoButton.addEventListener('click', () => {
+	  arSystem.pause(true); // pause AR, keep video
+	});
+	unpauseButton.addEventListener('click', () => {
+	  arSystem.unpause(); // unpause AR and video
+	});
+	// arReady event triggered when ready
+	sceneEl.addEventListener("arReady", (event) => {
+	  // console.log("MindAR is ready")
+	});
+	// arError event triggered when something went wrong. Mostly browser compatbility issue
+	sceneEl.addEventListener("arError", (event) => {
+	  // console.log("MindAR failed to start")
+	});
+	// detect target found
+	exampleTarget.addEventListener("targetFound", event => {
+	  console.log("target found");
+	});
+	// detect target lost
+	exampleTarget.addEventListener("targetLost", event => {
+	  console.log("target lost");
+	});
+	// detect click event
+	examplePlane.addEventListener("click", event => {
+	  console.log("plane click");
+	});
+      });
+    </script>
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: ./src/targets.mind; filterMinCF:0.1; filterBeta: 10; maxTrack: 2" 
-      vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
-       gesture-detector
-        id="scene"
-      >
-      <a-assets>
-            <img id="card" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.2/examples/image-tracking/assets/card-example/card.png" />
-            <a-asset-item id="koutoubia" src="./stylized_mosque/scene.gltf"></a-asset-item>
-             <a-asset-item id="tree-obj" src="./bab dokala/remparts+5-1-1.obj"></a-asset-item>
-              <a-asset-item id="tree-mtl" src="./bab dokala/remparts+5-1-1..mtl"></a-asset-item>
-        </a-assets>
+    <div style="position: absolute; z-index: 1000">
+      <button id="example-start-button">Start</button>
+      <button id="example-pause-button">Pause</button>
+      <button id="example-pause-keep-video-button">Pause (keep video)</button>
+      <button id="example-unpause-button">UnPause</button>
+      <button id="example-stop-button">Stop</button>
+    </div>
+    <a-scene mindar-image="imageTargetSrc: ./src/targets.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-<!--        <a-camera cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000;"></a-camera>
-      </a-camera> -->
-      <a-entity mindar-image-target="targetIndex: 0">
-      
-      <a-entity
+      <a-entity id="example-target" mindar-image-target="targetIndex: 0">
+        
+	
+        <a-entity
         gltf-model="./marrakech-tower/scene.gltf"
         scale="0.3 0.3 0.3"
        rotation="90 0 0 " position="0 0 0"
        
              class="clickable" gesture-handler
       ></a-entity>
-       <a-text value="Mosque de el koutoubia" position="0 0.5 0" ></a-text>
+       <a-text value="Mosque de el koutoubia" position="0 0.4 0"  color="black" width="2" align="center" ></a-text>
       </a-entity>
-<!--         <a-entity mindar-image-target="targetIndex: 1">
-          <a-entity
-        gltf-model="./stylized_mosque/scene.gltf"
-        scale="0.009 0.009 0.009"
-       rotation="90 0 0 " position="0 0 0"
-      ></a-entity>
-      </a-entity> -->
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model rotation="90 0 0 " position="0 0 0.1" scale="0.001 0.001 0.001" src="#koutoubia"
-          animation="property: position; to: 0 0.1 0.1; dur: 1000; easing: easeInOutQuad; loop: true; dir: alternate"
-        >
-      </a-entity>
+    </a-entity>
     </a-scene>
-    <script>
-      const sceneEl = document.querySelector('a-scene');
-   sceneEl.addEventListener("targetFound", event => {
-  console.log("target found");
-});
-
-    </script>
   </body>
 </html>
