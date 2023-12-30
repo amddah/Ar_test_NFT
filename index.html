@@ -47,8 +47,9 @@
       </a-entity>
     </a-scene>
     <script>
-      sceneEl.addEventListener("targetFound", event => {
-      console.log("target found");
+      const sceneEl = document.querySelector('a-scene');
+   sceneEl.addEventListener("targetFound", event => {
+  alert("target found");
 });
 
     </script>
