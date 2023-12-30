@@ -15,6 +15,7 @@
         id="scene"
       >
       <a-assets>
+            <img id="card" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.2/examples/image-tracking/assets/card-example/card.png" />
             <a-asset-item id="koutoubia" src="./stylized_mosque/scene.gltf"></a-asset-item>
              <a-asset-item id="tree-obj" src="./bab dokala/remparts+5-1-1.obj"></a-asset-item>
               <a-asset-item id="tree-mtl" src="./bab dokala/remparts+5-1-1..mtl"></a-asset-item>
@@ -30,6 +31,7 @@
        
              class="clickable" gesture-handler
       ></a-entity>
+         <a-plane src="#card" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
       </a-entity>
 <!--         <a-entity mindar-image-target="targetIndex: 1">
           <a-entity
