@@ -1,33 +1,149 @@
-
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-  </head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AR app </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+      
+      header{
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .open-camera{
+         position: absolute;
+        
+       
+       
+        bottom: 0; 
+       left: 40%;
+       right: 50%;
+      }
+      .card1{
+        border: 0px;
+        margin: 5px;
+        margin-top: 10px;
+        padding: 5px;
+        border-radius: 8px;
+        box-shadow: 3px 3px 0  rgb(235, 229, 229), -1em 0 .4em rgb(227, 227, 222); 
+
+        
+      }
+      .card{
+        border: 0;
+      }
+      .download{
+        display: flex;
+        justify-content: center;
+        margin-top: 8px;
+
+      }
+      
+      .card h5,p {
+        visibility: hidden;
+      }
+      .card:hover h5,.card:hover p {
+        visibility:visible;
+        transition: all 0.3s ease-out;
+    
+        background-color: white;
+        border: 2px solid white;
+        padding: 10px; /* Ajoutez un espace intérieur pour améliorer l'esthétique */
+      }
+      
+      /* .card:hover img{
+        visibility: hidden;
+       
+      }
+     */
+
+
+
+
+    </style>
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      <a-assets>
-            <a-asset-item id="koutoubia" src="./stylized_mosque/scene.gltf"></a-asset-item>
-<!--              <a-asset-item id="tree-obj" src="./modele_3D/mosq+koutoubia+3-1.obj"></a-asset-item>
-              <a-asset-item id="tree-mtl" src="./modele_3D/mosq+koutoubia+3-1.mtl"></a-asset-item> -->
- 
-        </a-assets>
+    <a href="view.html">hhhhhh</a>
+    <nav class="navbar navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Kech In AR</a>
+        <div class="layout-right">
+          <h1> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+             <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+           </svg></h1>
+         </div>
+      </div>
+    </nav>
+    <header>
+      <!-- <div class="layout-left">
+        <h2>Kech In AR</h2>
+      </div>
+      <div class="layout-right">
+       <h1> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg></h1>
+      </div> -->
+    </header>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-      <a-entity mindar-image-target="targetIndex: 0">
+    <section>
+      <div class="card1">
+        <h2>Scan this image to have an exeprience with AR </h2>
+     
+      <div class="card bg-dark text-black">
+        
+        <img src="Maps.jpg" class="card-img" alt="..." border="0">
+        
+        <div class="card-img-overlay">
+          <h5 class="card-title">Map Marrakech</h5>
+          <p class="card-text">This is a screenshot from the Marrakech Map, which we utilized to implement the Augmented Reality (AR) feature. You need to scan this screen to engage in the AR experience</p>
+          
+      </div>
+   
+      </div>
+      <div class="download">
+        
+       <button type="button" class="btn btn-secondary" onclick="downloadImage()">Download this image</button>
+      </div>
+    </div>
+    </section>
+    <div class="open-camera">
+      <a href="app.html"> 
+       
+        <button type="button" class="btn btn-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" color="white" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16">
+            <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+            <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0"/>
+            </svg>
+        </button>
       
-        <a-entity
-        gltf-model="./marrakech-tower/scene.gltf"
-        scale="0.3 0.3 0.3"
-       rotation="90 0 0 " position="0 0 0"
-      >
-      </a-entity>
-<!--          <a-entity obj-model="obj: #tree-obj; mtl: #tree-mtl"  scale="0.007 0.007 0.007"
-       rotation="90 0 0 " position="0 0 0"></a-entity> -->
-        <a-plane color="blue" opaciy="0.5" position="15 15 15" height="0.552" width="1" rotation="0 0 0"></a-plane>
-      </a-entity>
-    </a-scene>
+      </a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script>
+      function downloadImage() {
+        // Récupérer l'URL de l'image
+        var imageUrl = document.querySelector('.card-img').src;
+          console.log(imageUrl);
+        // Créer un élément <a> pour simuler le téléchargement
+        var downloadLink = document.createElement('a');
+        downloadLink.href = imageUrl;
+        downloadLink.download = 'Maps.jpg';
+  
+        // Ajouter l'élément <a> à la page
+        document.body.appendChild(downloadLink);
+  
+        // Simuler le clic sur le lien de téléchargement
+        downloadLink.click();
+  
+        // Supprimer l'élément <a> de la page
+        document.body.removeChild(downloadLink);
+      }
+    </script>
   </body>
 </html>
