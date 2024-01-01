@@ -11,66 +11,115 @@
 	let arSystem;
 	sceneEl.addEventListener('loaded', function () {
 	  arSystem = sceneEl.systems["mindar-image-system"];
-
 	  arSystem.start();
 	});
 	const exampleTarget = document.querySelector('#example-target');
-	const examplePlane = document.querySelector('#example-plane');
-	const startButton = document.querySelector("#example-start-button");
-	const stopButton = document.querySelector("#example-stop-button");
-	const pauseButton = document.querySelector("#example-pause-button");
-	const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
-	const unpauseButton = document.querySelector("#example-unpause-button");
-	startButton.addEventListener('click', () => {
-	  console.log("start");
-	  arSystem.start(); // start AR 
-	});
-	stopButton.addEventListener('click', () => {
-	  arSystem.stop(); // stop AR 
-	});
-	pauseButton.addEventListener('click', () => {
-	  arSystem.pause(); // pause AR, pause video
-	});
-	pauseKeepVideoButton.addEventListener('click', () => {
-	  arSystem.pause(true); // pause AR, keep video
-	});
-	unpauseButton.addEventListener('click', () => {
-	  arSystem.unpause(); // unpause AR and video
-	});
+	
 	// arReady event triggered when ready
 	sceneEl.addEventListener("arReady", (event) => {
 	  // console.log("MindAR is ready")
 	});
-	// arError event triggered when something went wrong. Mostly browser compatbility issue
-	sceneEl.addEventListener("arError", (event) => {
-	  // console.log("MindAR failed to start")
-	});
+	
 	// detect target found
 	exampleTarget.addEventListener("targetFound", event => {
 	  console.log("target found");
+		document.querySelector('.hero__wrapper').style.display='initial';
 	});
 	// detect target lost
 	exampleTarget.addEventListener("targetLost", event => {
 	  console.log("target lost");
+	  document.querySelector('.hero__wrapper').style.display='none';
 	});
 	// detect click event
 	examplePlane.addEventListener("click", event => {
 	  console.log("plane click");
 	});
       });
-    </script>
-  </head>
-  <body>
-    <!-- <div style="position: absolute; z-index: 1000">
-      <button id="example-start-button">Start</button>
-      <button id="example-pause-button">Pause</button>
-      <button id="example-pause-keep-video-button">Pause (keep video)</button>
-      <button id="example-unpause-button">UnPause</button>
-      <button id="example-stop-button">Stop</button>
 
-      
-    </div> -->
-    <a-scene mindar-image="imageTargetSrc: ./src/targets.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+
+    </script>
+
+  </head>
+  <style>
+	.btn{
+      position: absolute;
+      color: white;
+    }
+    .formElem{
+    height: 300px;
+    width: auto;
+   margin-left: 90px;
+   margin-top: 100px;
+   margin-bottom: 50px;
+   background-color: rgba(18, 19, 18, 0.596);
+  background-position: 0% 0%;
+   color: white;
+   position: absolute;
+   right: 40;
+   display: none;
+}
+.reservation-item{
+    margin-top: 15px;
+    margin-left: 20px;
+}
+
+.layout-right{
+  position: absolute;
+  top: 200;
+  left: 90;
+ 
+}
+.btn-info{
+  cursor:pointer;
+  color: aliceblue;
+}
+  </style>
+  <body>
+	<a href="/" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M9 13l-4 -4l4 -4m-4 4h11a4 4 0 0 1 0 8h-1" /> </svg></a>
+    <!-- header  -->
+    <div class="header1" >
+      <div class="formElem">
+        <div class="reservation-item">
+          <form action="index.php" method="get">
+            <div class="encharge">
+              <div class="prise">
+                <span><i class="far fa-arrow-alt-circle-up"></i></span>
+              </div>
+              <div class="prise1">
+                <p>PRISE EN CHARGE</p>
+              </div>
+              
+              </div>
+              
+                <div class="encharge">
+                  <div class="prise">
+                    <span><i class="fas fa-car"></i></span>
+                  </div>
+                  <div class="prise1">
+                    <p>PRÉVOIR DES FRAIS SUPPLÉMENTAIRES<br> SI RESTITUTION DANS<br> UNE AUTRE VILLE</p>
+                  </div>
+                   
+                  </div>
+           
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- fin  -->
+
+    <!-- <div class="layout-right">
+      <h1 class="btn-info"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+         <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+       </svg></h1>
+     </div> -->
+
+    <a-scene mindar-image="imageTargetSrc: ./src/targets.mind;autoStart:false; maxTrack: 2"color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"  vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-assets>
+        
+        <a-asset-item id="koutoubia" src="./stylized_mosque/scene.gltf"></a-asset-item>
+    </a-assets>
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
 
       <a-entity id="example-target" mindar-image-target="targetIndex: 0">
@@ -82,9 +131,19 @@
        rotation="90 0 0 " position="0 0 0"
        
              class="clickable" gesture-handler
-      ></a-entity>
+      >
+
+      <!-- 
+      </a-entity>
        <a-text value="Mosque de el koutoubia" position="0 0.4 0"  color="black" width="2" align="center" ></a-text>
       </a-entity>
+       -->
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model rotation="90 0 0 " position="0 0 0.1" scale="0.001 0.001 0.001" src="#koutoubia"
+        animation="property: position; to: 0 0.1 0.1; dur: 1000; easing: easeInOutQuad; loop: true; dir: alternate"
+      >
     </a-entity>
     </a-scene>
 
@@ -99,6 +158,13 @@
       </button>
 	</a>
     </div>
-    
+    <script>
+
+      
+      document.querySelector('.btn-info').addEventListener('click',()=>{
+        alert("it work")
+        document.querySelector('.formElem').style.display='initial';
+      })
+    </script>
   </body>
 </html>

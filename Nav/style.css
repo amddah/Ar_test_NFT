@@ -8,7 +8,9 @@
     --color-dark: #2719cd;
     --font-stack: 'Josefin Sans', 'Montserrat', 'sans-serif';
   }
-  
+  .hero__wrapper{
+    display: none;
+  }
   /* body {
     display: flex;
     align-items: center;
