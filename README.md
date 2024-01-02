@@ -10,7 +10,7 @@ This application dedicated to heritage enhancement, with a specific focus on the
 - Threejs
 - MindAr
 - Typescript
-#Screenshot
+
 ## Screenshot
 
 ![Screenshot 1](./screen1.jpg)
