@@ -1,0 +1,420 @@
+{
+  "info": {
+    "name": "QuizMaster API",
+    "description": "Complete API collection for QuizMaster mobile quiz application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"password123\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Student\",\n  \"role\": \"student\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Professor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"professor@example.com\",\n  \"password\": \"password123\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Professor\",\n  \"role\": \"professor\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/profile",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quizzes",
+      "item": [
+        {
+          "name": "Create Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Introduction to Algorithms\",\n  \"description\": \"Test your understanding of basic algorithms\",\n  \"category\": \"programming\",\n  \"difficulty_level\": \"medium\",\n  \"course_id\": \"CS201\",\n  \"questions\": [\n    {\n      \"question_text\": \"What is the time complexity of binary search?\",\n      \"type\": \"multiple_choice\",\n      \"options\": [\"O(n)\", \"O(log n)\", \"O(n^2)\", \"O(1)\"],\n      \"correct_answer\": 1,\n      \"points\": 15\n    },\n    {\n      \"question_text\": \"Is quicksort a stable sorting algorithm?\",\n      \"type\": \"true_false\",\n      \"correct_answer\": false,\n      \"points\": 10\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/quizzes",
+              "host": ["{{base_url}}"],
+              "path": ["quizzes"]
+            }
+          }
+        },
+        {
+          "name": "Get All Quizzes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/quizzes?category=programming&difficulty=medium",
+              "host": ["{{base_url}}"],
+              "path": ["quizzes"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "programming"
+                },
+                {
+                  "key": "difficulty",
+                  "value": "medium"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Quiz by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/quizzes/{{quiz_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["quizzes", "{{quiz_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Approve Quiz",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/quizzes/{{quiz_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["quizzes", "{{quiz_id}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Delete Quiz",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/quizzes/{{quiz_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["quizzes", "{{quiz_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attempts",
+      "item": [
+        {
+          "name": "Start Attempt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quiz_id\": \"{{quiz_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/attempts/start",
+              "host": ["{{base_url}}"],
+              "path": ["attempts", "start"]
+            }
+          }
+        },
+        {
+          "name": "Submit Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attempt_id\": \"{{attempt_id}}\",\n  \"question_id\": \"{{question_id}}\",\n  \"answer\": 1,\n  \"time_to_answer\": 4\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/attempts/answer",
+              "host": ["{{base_url}}"],
+              "path": ["attempts", "answer"]
+            }
+          }
+        },
+        {
+          "name": "Complete Attempt",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/attempts/{{attempt_id}}/complete",
+              "host": ["{{base_url}}"],
+              "path": ["attempts", "{{attempt_id}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Get Attempt by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/attempts/{{attempt_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["attempts", "{{attempt_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get My Attempts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/attempts",
+              "host": ["{{base_url}}"],
+              "path": ["attempts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leaderboards",
+      "item": [
+        {
+          "name": "Get Quiz Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leaderboards/quiz/{{quiz_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["leaderboards", "quiz", "{{quiz_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get My Rank",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leaderboards/quiz/{{quiz_id}}/my-rank",
+              "host": ["{{base_url}}"],
+              "path": ["leaderboards", "quiz", "{{quiz_id}}", "my-rank"]
+            }
+          }
+        },
+        {
+          "name": "Get Global Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leaderboards/global",
+              "host": ["{{base_url}}"],
+              "path": ["leaderboards", "global"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "quiz_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attempt_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "question_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

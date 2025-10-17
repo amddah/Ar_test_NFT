@@ -1,0 +1,958 @@
+basePath: /api/v1
+definitions:
+  handlers.CreateQuizRequest:
+    type: object
+  handlers.LoginRequest:
+    properties:
+      email:
+        example: student@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.LoginResponse:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  handlers.RegisterRequest:
+    properties:
+      email:
+        example: student@example.com
+        type: string
+      first_name:
+        example: John
+        type: string
+      last_name:
+        example: Doe
+        type: string
+      password:
+        example: password123
+        minLength: 6
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/models.UserRole'
+        enum:
+        - student
+        - professor
+        example: student
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    - role
+    type: object
+  handlers.StartAttemptRequest:
+    properties:
+      quiz_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+    required:
+    - quiz_id
+    type: object
+  handlers.SubmitAnswerRequest:
+    type: object
+  models.Answer:
+    properties:
+      answered_at:
+        type: string
+      is_correct:
+        type: boolean
+      points_earned:
+        type: number
+      question_id:
+        type: string
+      student_answer: {}
+      time_to_answer:
+        description: In seconds
+        type: integer
+    type: object
+  models.DifficultyLevel:
+    enum:
+    - easy
+    - medium
+    - hard
+    type: string
+    x-enum-varnames:
+    - LevelEasy
+    - LevelMedium
+    - LevelHard
+  models.LeaderboardEntry:
+    properties:
+      completed_at:
+        type: string
+      max_score:
+        type: number
+      percentage:
+        type: number
+      rank:
+        type: integer
+      score:
+        type: number
+      student_id:
+        type: string
+      student_name:
+        type: string
+      time_taken:
+        type: integer
+    type: object
+  models.Question:
+    properties:
+      correct_answer:
+        description: bool for T/F, int for MC (index)
+      id:
+        type: string
+      options:
+        description: For multiple choice
+        items:
+          type: string
+        type: array
+      order:
+        description: Question order in quiz
+        type: integer
+      points:
+        description: Base points for this question
+        type: integer
+      question_text:
+        type: string
+      time_limit:
+        description: In seconds, default 15
+        type: integer
+      type:
+        $ref: '#/definitions/models.QuestionType'
+    required:
+    - question_text
+    - type
+    type: object
+  models.QuestionType:
+    enum:
+    - true_false
+    - multiple_choice
+    type: string
+    x-enum-varnames:
+    - QuestionTypeTrueFalse
+    - QuestionTypeMultipleChoice
+  models.Quiz:
+    properties:
+      approved_at:
+        type: string
+      approved_by:
+        type: string
+      category:
+        $ref: '#/definitions/models.QuizCategory'
+      course_id:
+        description: External course reference
+        type: string
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      creator_role:
+        $ref: '#/definitions/models.UserRole'
+      description:
+        type: string
+      difficulty_level:
+        $ref: '#/definitions/models.DifficultyLevel'
+      id:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/models.Question'
+        type: array
+      status:
+        $ref: '#/definitions/models.QuizStatus'
+      title:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - category
+    - course_id
+    - difficulty_level
+    - title
+    type: object
+  models.QuizAttempt:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/models.Answer'
+        type: array
+      completed_at:
+        type: string
+      id:
+        type: string
+      max_score:
+        type: number
+      quiz_id:
+        type: string
+      started_at:
+        type: string
+      student_id:
+        type: string
+      time_taken:
+        description: In seconds
+        type: integer
+      total_score:
+        type: number
+    type: object
+  models.QuizCategory:
+    enum:
+    - mathematics
+    - science
+    - history
+    - literature
+    - programming
+    - languages
+    type: string
+    x-enum-varnames:
+    - CategoryMathematics
+    - CategoryScience
+    - CategoryHistory
+    - CategoryLiterature
+    - CategoryProgramming
+    - CategoryLanguages
+  models.QuizStatus:
+    enum:
+    - pending
+    - approved
+    - rejected
+    type: string
+    x-enum-varnames:
+    - StatusPending
+    - StatusApproved
+    - StatusRejected
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      role:
+        $ref: '#/definitions/models.UserRole'
+      updated_at:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - role
+    type: object
+  models.UserRole:
+    enum:
+    - professor
+    - student
+    type: string
+    x-enum-varnames:
+    - RoleProfessor
+    - RoleStudent
+host: localhost:8080
+info:
+  contact:
+    email: support@quizmaster.io
+    name: API Support
+    url: http://www.quizmaster.io/support
+  description: RESTful API for a mobile quiz application with role-based access, quiz
+    lifecycle, scoring, and leaderboard features.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: QuizMaster API
+  version: "1.0"
+paths:
+  /attempts:
+    get:
+      consumes:
+      - application/json
+      description: Get all quiz attempts by the authenticated student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.QuizAttempt'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get my attempts
+      tags:
+      - attempts
+  /attempts/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific quiz attempt
+      parameters:
+      - description: Attempt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuizAttempt'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get attempt by ID
+      tags:
+      - attempts
+  /attempts/{id}/complete:
+    put:
+      consumes:
+      - application/json
+      description: Mark a quiz attempt as complete and calculate final score
+      parameters:
+      - description: Attempt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuizAttempt'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Complete an attempt
+      tags:
+      - attempts
+  /attempts/answer:
+    post:
+      consumes:
+      - application/json
+      description: Submit an answer for a specific question in an ongoing attempt
+      parameters:
+      - description: Answer submission
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SubmitAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit an answer
+      tags:
+      - attempts
+  /attempts/start:
+    post:
+      consumes:
+      - application/json
+      description: Start attempting a quiz (students only, requires course completion)
+      parameters:
+      - description: Quiz ID to attempt
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.StartAttemptRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.QuizAttempt'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Start a quiz attempt
+      tags:
+      - attempts
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and get JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account (student or professor)
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
+  /leaderboards/global:
+    get:
+      consumes:
+      - application/json
+      description: Get the top performing students across all quizzes (top 50)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get global leaderboard
+      tags:
+      - leaderboards
+  /leaderboards/quiz/{quiz_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get the leaderboard for a specific quiz, showing rankings of all
+        students
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.LeaderboardEntry'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get quiz leaderboard
+      tags:
+      - leaderboards
+  /leaderboards/quiz/{quiz_id}/my-rank:
+    get:
+      consumes:
+      - application/json
+      description: Get the authenticated student's rank for a specific quiz
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get my rank
+      tags:
+      - leaderboards
+  /quizzes:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of quizzes with optional filters (category, difficulty,
+        status)
+      parameters:
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      - description: Filter by difficulty level
+        enum:
+        - easy
+        - medium
+        - hard
+        in: query
+        name: difficulty
+        type: string
+      - description: Filter by status (professors only)
+        enum:
+        - pending
+        - approved
+        - rejected
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Quiz'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List quizzes
+      tags:
+      - quizzes
+    post:
+      consumes:
+      - application/json
+      description: Create a new quiz. Professors create approved quizzes, students
+        create pending quizzes
+      parameters:
+      - description: Quiz details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateQuizRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Quiz'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new quiz
+      tags:
+      - quizzes
+  /quizzes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a quiz (creator or professor only)
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a quiz
+      tags:
+      - quizzes
+    get:
+      consumes:
+      - application/json
+      description: Get detailed information about a specific quiz
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Quiz'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get quiz by ID
+      tags:
+      - quizzes
+  /quizzes/{id}/approve:
+    put:
+      consumes:
+      - application/json
+      description: Approve or reject a pending quiz (professors only)
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Quiz'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Approve or reject a quiz
+      tags:
+      - quizzes
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

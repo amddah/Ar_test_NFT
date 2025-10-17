@@ -1,0 +1,5 @@
+.env
+*.log
+tmp/
+dist/
+vendor/

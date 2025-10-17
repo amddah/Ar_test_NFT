@@ -1,0 +1,253 @@
+openapi: 3.0.0
+info:
+  title: QuizMaster API
+  version: 1.0.0
+  description: |
+    RESTful API for a mobile quiz application with role-based access, quiz lifecycle, scoring, and leaderboard features. Built with Go (Gin) and MongoDB.
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [student, professor]
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        level:
+          type: string
+          enum: [easy, medium, hard]
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        createdBy:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [truefalse, multiplechoice]
+        text:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        answer:
+          type: string
+        timeLimit:
+          type: integer
+          default: 15
+    Attempt:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        quizId:
+          type: string
+        score:
+          type: integer
+        answers:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              answer:
+                type: string
+              responseTime:
+                type: integer
+    LeaderboardEntry:
+      type: object
+      properties:
+        userId:
+          type: string
+        username:
+          type: string
+        score:
+          type: integer
+
+paths:
+  /api/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [student, professor]
+      responses:
+        '201':
+          description: User registered
+        '400':
+          description: Invalid input
+
+  /api/login:
+    post:
+      summary: Login and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: JWT token
+        '401':
+          description: Invalid credentials
+
+  /api/quizzes:
+    get:
+      summary: List all approved quizzes
+      responses:
+        '200':
+          description: List of quizzes
+    post:
+      summary: Create a new quiz
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Quiz'
+      responses:
+        '201':
+          description: Quiz created (pending approval if student)
+        '401':
+          description: Unauthorized
+
+  /api/quizzes/{id}/approve:
+    post:
+      summary: Approve a pending quiz (professor only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Quiz approved
+        '403':
+          description: Forbidden
+
+  /api/quizzes/{id}/reject:
+    post:
+      summary: Reject a pending quiz (professor only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Quiz rejected
+        '403':
+          description: Forbidden
+
+  /api/quizzes/{id}/attempt:
+    post:
+      summary: Attempt a quiz (student only, must have completed course)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      questionId:
+                        type: string
+                      answer:
+                        type: string
+                      responseTime:
+                        type: integer
+      responses:
+        '200':
+          description: Attempt result and score
+        '403':
+          description: Forbidden
+
+  /api/quizzes/{id}/leaderboard:
+    get:
+      summary: Get leaderboard for a quiz
+      responses:
+        '200':
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
