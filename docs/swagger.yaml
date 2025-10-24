@@ -1,6 +1,76 @@
 basePath: /api/v1
 definitions:
+  handlers.CompleteAttemptRequest:
+    properties:
+      id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+    required:
+    - id
+    type: object
+  handlers.CreateQuestionRequest:
+    properties:
+      correct_answer:
+        example: "true"
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      points:
+        example: 10
+        minimum: 1
+        type: integer
+      question_text:
+        example: Is Go a statically typed language?
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.QuestionType'
+        enum:
+        - true_false
+        - multiple_choice
+        example: true_false
+    required:
+    - correct_answer
+    - points
+    - question_text
+    - type
+    type: object
   handlers.CreateQuizRequest:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/models.QuizCategory'
+        example: programming
+      course_id:
+        example: course123
+        type: string
+      description:
+        example: Basic concepts of Go programming language
+        type: string
+      difficulty_level:
+        allOf:
+        - $ref: '#/definitions/models.DifficultyLevel'
+        enum:
+        - easy
+        - medium
+        - hard
+        example: easy
+      questions:
+        items:
+          $ref: '#/definitions/handlers.CreateQuestionRequest'
+        minItems: 1
+        type: array
+      title:
+        example: Introduction to Go Programming
+        type: string
+    required:
+    - category
+    - course_id
+    - difficulty_level
+    - questions
+    - title
     type: object
   handlers.LoginRequest:
     properties:
@@ -60,6 +130,25 @@ definitions:
     - quiz_id
     type: object
   handlers.SubmitAnswerRequest:
+    properties:
+      answer:
+        example: "true"
+        type: string
+      attempt_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      question_id:
+        example: 507f1f77bcf86cd799439012
+        type: string
+      time_to_answer:
+        description: In seconds
+        example: 8
+        type: integer
+    required:
+    - answer
+    - attempt_id
+    - question_id
+    - time_to_answer
     type: object
   models.Answer:
     properties:
@@ -109,7 +198,10 @@ definitions:
     properties:
       correct_answer:
         description: bool for T/F, int for MC (index)
+        example: "true"
+        type: string
       id:
+        example: 507f1f77bcf86cd799439012
         type: string
       options:
         description: For multiple choice
@@ -118,17 +210,26 @@ definitions:
         type: array
       order:
         description: Question order in quiz
+        example: 1
         type: integer
       points:
         description: Base points for this question
+        example: 10
         type: integer
       question_text:
+        example: Is Go a compiled language?
         type: string
       time_limit:
         description: In seconds, default 15
+        example: 15
         type: integer
       type:
-        $ref: '#/definitions/models.QuestionType'
+        allOf:
+        - $ref: '#/definitions/models.QuestionType'
+        enum:
+        - true_false
+        - multiple_choice
+        example: true_false
     required:
     - question_text
     - type
@@ -235,15 +336,24 @@ definitions:
       created_at:
         type: string
       email:
+        example: john.doe@example.com
         type: string
       first_name:
+        example: John
         type: string
       id:
+        example: 507f1f77bcf86cd799439011
         type: string
       last_name:
+        example: Doe
         type: string
       role:
-        $ref: '#/definitions/models.UserRole'
+        allOf:
+        - $ref: '#/definitions/models.UserRole'
+        enum:
+        - student
+        - professor
+        example: student
       updated_at:
         type: string
     required:
@@ -347,47 +457,6 @@ paths:
       summary: Get attempt by ID
       tags:
       - attempts
-  /attempts/{id}/complete:
-    put:
-      consumes:
-      - application/json
-      description: Mark a quiz attempt as complete and calculate final score
-      parameters:
-      - description: Attempt ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.QuizAttempt'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "401":
-          description: Unauthorized
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Complete an attempt
-      tags:
-      - attempts
   /attempts/answer:
     post:
       consumes:
@@ -429,6 +498,48 @@ paths:
       security:
       - BearerAuth: []
       summary: Submit an answer
+      tags:
+      - attempts
+  /attempts/complete:
+    put:
+      consumes:
+      - application/json
+      description: Mark a quiz attempt as complete and calculate final score
+      parameters:
+      - description: Attempt ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CompleteAttemptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuizAttempt'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Complete an attempt
       tags:
       - attempts
   /attempts/start:

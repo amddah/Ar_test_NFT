@@ -140,6 +140,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/attempts/complete": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mark a quiz attempt as complete and calculate final score",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attempts"
+                ],
+                "summary": "Complete an attempt",
+                "parameters": [
+                    {
+                        "description": "Attempt ID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CompleteAttemptRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.QuizAttempt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/attempts/start": {
             "post": {
                 "security": [
@@ -242,70 +308,6 @@ const docTemplate = `{
                     "attempts"
                 ],
                 "summary": "Get attempt by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Attempt ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.QuizAttempt"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/attempts/{id}/complete": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Mark a quiz attempt as complete and calculate final score",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "attempts"
-                ],
-                "summary": "Complete an attempt",
                 "parameters": [
                     {
                         "type": "string",
@@ -1067,8 +1069,111 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.CompleteAttemptRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                }
+            }
+        },
+        "handlers.CreateQuestionRequest": {
+            "type": "object",
+            "required": [
+                "correct_answer",
+                "points",
+                "question_text",
+                "type"
+            ],
+            "properties": {
+                "correct_answer": {
+                    "type": "string",
+                    "example": "true"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "points": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 10
+                },
+                "question_text": {
+                    "type": "string",
+                    "example": "Is Go a statically typed language?"
+                },
+                "type": {
+                    "enum": [
+                        "true_false",
+                        "multiple_choice"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.QuestionType"
+                        }
+                    ],
+                    "example": "true_false"
+                }
+            }
+        },
         "handlers.CreateQuizRequest": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "category",
+                "course_id",
+                "difficulty_level",
+                "questions",
+                "title"
+            ],
+            "properties": {
+                "category": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.QuizCategory"
+                        }
+                    ],
+                    "example": "programming"
+                },
+                "course_id": {
+                    "type": "string",
+                    "example": "course123"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Basic concepts of Go programming language"
+                },
+                "difficulty_level": {
+                    "enum": [
+                        "easy",
+                        "medium",
+                        "hard"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.DifficultyLevel"
+                        }
+                    ],
+                    "example": "easy"
+                },
+                "questions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/handlers.CreateQuestionRequest"
+                    }
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Introduction to Go Programming"
+                }
+            }
         },
         "handlers.LoginRequest": {
             "type": "object",
@@ -1153,7 +1258,32 @@ const docTemplate = `{
             }
         },
         "handlers.SubmitAnswerRequest": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "answer",
+                "attempt_id",
+                "question_id",
+                "time_to_answer"
+            ],
+            "properties": {
+                "answer": {
+                    "type": "string",
+                    "example": "true"
+                },
+                "attempt_id": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                },
+                "question_id": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439012"
+                },
+                "time_to_answer": {
+                    "description": "In seconds",
+                    "type": "integer",
+                    "example": 8
+                }
+            }
         },
         "models.Answer": {
             "type": "object",
@@ -1227,10 +1357,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "correct_answer": {
-                    "description": "bool for T/F, int for MC (index)"
+                    "description": "bool for T/F, int for MC (index)",
+                    "type": "string",
+                    "example": "true"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439012"
                 },
                 "options": {
                     "description": "For multiple choice",
@@ -1241,21 +1374,34 @@ const docTemplate = `{
                 },
                 "order": {
                     "description": "Question order in quiz",
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "points": {
                     "description": "Base points for this question",
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "question_text": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Is Go a compiled language?"
                 },
                 "time_limit": {
                     "description": "In seconds, default 15",
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 15
                 },
                 "type": {
-                    "$ref": "#/definitions/models.QuestionType"
+                    "enum": [
+                        "true_false",
+                        "multiple_choice"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.QuestionType"
+                        }
+                    ],
+                    "example": "true_false"
                 }
             }
         },
@@ -1408,19 +1554,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "john.doe@example.com"
                 },
                 "first_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "John"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
                 },
                 "last_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Doe"
                 },
                 "role": {
-                    "$ref": "#/definitions/models.UserRole"
+                    "enum": [
+                        "student",
+                        "professor"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserRole"
+                        }
+                    ],
+                    "example": "student"
                 },
                 "updated_at": {
                     "type": "string"

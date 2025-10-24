@@ -301,6 +301,11 @@ func (h *AttemptHandler) SubmitAnswer(c *gin.Context) {
 	})
 }
 
+// CompleteAttemptRequest defines the request body for completing an attempt.
+type CompleteAttemptRequest struct {
+	ID string `json:"id" binding:"required" example:"507f1f77bcf86cd799439011"`
+}
+
 // CompleteAttempt godoc
 // @Summary      Complete an attempt
 // @Description  Mark a quiz attempt as complete and calculate final score
@@ -308,15 +313,20 @@ func (h *AttemptHandler) SubmitAnswer(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id path string true "Attempt ID"
+// @Param        request body CompleteAttemptRequest true "Attempt ID"
 // @Success      200 {object} models.QuizAttempt
 // @Failure      400 {object} map[string]string
 // @Failure      401 {object} map[string]string
 // @Failure      404 {object} map[string]string
-// @Router       /attempts/{id}/complete [put]
+// @Router       /attempts/complete [put]
 func (h *AttemptHandler) CompleteAttempt(c *gin.Context) {
-	attemptID := c.Param("id")
-	objectID, err := primitive.ObjectIDFromHex(attemptID)
+	var req CompleteAttemptRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	objectID, err := primitive.ObjectIDFromHex(req.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid attempt ID"})
 		return

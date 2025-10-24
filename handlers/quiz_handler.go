@@ -4,6 +4,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"quizmasterapi/config"
@@ -151,9 +152,9 @@ func (h *QuizHandler) CreateQuiz(c *gin.Context) {
 // @Failure      500 {object} map[string]string
 // @Router       /quizzes [get]
 func (h *QuizHandler) GetQuizzes(c *gin.Context) {
-	category := c.Query("category")
-	difficulty := c.Query("difficulty")
-	status := c.Query("status")
+	category := strings.ToLower(c.Query("category"))
+	difficulty := strings.ToLower(c.Query("difficulty"))
+	status := strings.ToLower(c.Query("status"))
 	userRole, _ := c.Get("user_role")
 
 	filter := bson.M{}
@@ -165,16 +166,19 @@ func (h *QuizHandler) GetQuizzes(c *gin.Context) {
 		filter["status"] = status
 	}
 
-	if category != "" {
+	if category != "" && strings.ToLower(category) != "all" {
 		filter["category"] = category
 	}
 
-	if difficulty != "" {
+	if difficulty != "" && strings.ToLower(difficulty) != "all" {
 		filter["difficulty_level"] = difficulty
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	// Debug: Log the filter being used
+	// fmt.Printf("Filter: %+v\n", filter)
 
 	opts := options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}})
 	cursor, err := h.collection.Find(ctx, filter, opts)
@@ -184,9 +188,15 @@ func (h *QuizHandler) GetQuizzes(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var quizzes []models.Quiz
+	quizzes := make([]models.Quiz, 0)
 	if err := cursor.All(ctx, &quizzes); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode quizzes"})
+		return
+	}
+
+	// If no quizzes found and user requested "all" categories, return empty array
+	if len(quizzes) == 0 {
+		c.JSON(http.StatusOK, []models.Quiz{})
 		return
 	}
 
