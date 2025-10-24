@@ -40,6 +40,11 @@ func main() {
 	// Load configuration
 	config.LoadConfig()
 
+	// Setup logging
+	if err := config.SetupLogger(); err != nil {
+		log.Fatal("Failed to setup logger:", err)
+	}
+
 	// Connect to database
 	if err := config.ConnectDatabase(); err != nil {
 		log.Fatal("Failed to connect to database:", err)
@@ -100,9 +105,9 @@ func main() {
 			quizzes.DELETE("/:id", quizHandler.DeleteQuiz)
 
 			// Professor-only routes
-			quizzes.PUT("/:id/approve",
+			quizzes.PUT("/:id/:action",
 				middleware.RequireRole(models.RoleProfessor),
-				quizHandler.ApproveQuiz)
+				quizHandler.ApproveRejectQuiz)
 		}
 
 		// Quiz attempt routes (Students only)

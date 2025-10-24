@@ -3,6 +3,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -67,6 +68,7 @@ type CreateQuestionRequest struct {
 func (h *QuizHandler) CreateQuiz(c *gin.Context) {
 	var req CreateQuizRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("CreateQuiz: Invalid request body - %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -82,12 +84,14 @@ func (h *QuizHandler) CreateQuiz(c *gin.Context) {
 	for i, q := range req.Questions {
 		// Validate question type
 		if q.Type != models.QuestionTypeTrueFalse && q.Type != models.QuestionTypeMultipleChoice {
+			log.Printf("CreateQuiz: Invalid question type for question %d: %s", i+1, q.Type)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid question type"})
 			return
 		}
 
 		// Validate multiple choice has options
 		if q.Type == models.QuestionTypeMultipleChoice && len(q.Options) < 2 {
+			log.Printf("CreateQuiz: Multiple choice question %d has insufficient options: %d", i+1, len(q.Options))
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Multiple choice questions must have at least 2 options"})
 			return
 		}
@@ -130,6 +134,7 @@ func (h *QuizHandler) CreateQuiz(c *gin.Context) {
 
 	_, err := h.collection.InsertOne(ctx, quiz)
 	if err != nil {
+		log.Printf("CreateQuiz: Failed to insert quiz - %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quiz"})
 		return
 	}
@@ -157,6 +162,8 @@ func (h *QuizHandler) GetQuizzes(c *gin.Context) {
 	status := strings.ToLower(c.Query("status"))
 	userRole, _ := c.Get("user_role")
 
+	log.Printf("GetQuizzes: Request with filters - category: %s, difficulty: %s, status: %s, userRole: %v", category, difficulty, status, userRole)
+
 	filter := bson.M{}
 
 	// Only show approved quizzes to students
@@ -183,6 +190,7 @@ func (h *QuizHandler) GetQuizzes(c *gin.Context) {
 	opts := options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}})
 	cursor, err := h.collection.Find(ctx, filter, opts)
 	if err != nil {
+		log.Printf("GetQuizzes: Failed to fetch quizzes - %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch quizzes"})
 		return
 	}
@@ -190,6 +198,7 @@ func (h *QuizHandler) GetQuizzes(c *gin.Context) {
 
 	quizzes := make([]models.Quiz, 0)
 	if err := cursor.All(ctx, &quizzes); err != nil {
+		log.Printf("GetQuizzes: Failed to decode quizzes - %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode quizzes"})
 		return
 	}
@@ -219,8 +228,10 @@ func (h *QuizHandler) GetQuizzes(c *gin.Context) {
 // @Router       /quizzes/{id} [get]
 func (h *QuizHandler) GetQuizByID(c *gin.Context) {
 	quizID := c.Param("id")
+	log.Printf("GetQuizByID: Request for quiz ID: %s", quizID)
 	objectID, err := primitive.ObjectIDFromHex(quizID)
 	if err != nil {
+		log.Printf("GetQuizByID: Invalid quiz ID format: %s - %v", quizID, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quiz ID"})
 		return
 	}
@@ -231,6 +242,7 @@ func (h *QuizHandler) GetQuizByID(c *gin.Context) {
 	var quiz models.Quiz
 	err = h.collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&quiz)
 	if err != nil {
+		log.Printf("GetQuizByID: Quiz not found: %s - %v", quizID, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
 		return
 	}
@@ -238,6 +250,7 @@ func (h *QuizHandler) GetQuizByID(c *gin.Context) {
 	userRole, _ := c.Get("user_role")
 	// Students can only view approved quizzes
 	if userRole.(models.UserRole) == models.RoleStudent && quiz.Status != models.StatusApproved {
+		log.Printf("GetQuizByID: Student attempted to access non-approved quiz: %s, status: %s", quizID, quiz.Status)
 		c.JSON(http.StatusForbidden, gin.H{"error": "Quiz not available"})
 		return
 	}
@@ -250,37 +263,44 @@ type ApproveQuizRequest struct {
 	Status models.QuizStatus `json:"status" binding:"required" enums:"approved,rejected" example:"approved"`
 }
 
-// ApproveQuiz godoc
+// ApproveRejectQuiz godoc
 // @Summary      Approve or reject a quiz
-// @Description  Approve or reject a pending quiz (professors only)
+// @Description  Approve or reject a pending quiz (professors only) using URL parameter
 // @Tags         quizzes
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id path string true "Quiz ID"
-// @Success      200 {object} models.Quiz
+// @Param        action path string true "Action (approve or reject)" Enums(approve,reject)
+// @Success      200 {object} map[string]string
 // @Failure      400 {object} map[string]string
 // @Failure      401 {object} map[string]string
 // @Failure      403 {object} map[string]string
 // @Failure      404 {object} map[string]string
-// @Router       /quizzes/{id}/approve [put]
-// ApproveQuiz handles quiz approval/rejection (professors only)
-func (h *QuizHandler) ApproveQuiz(c *gin.Context) {
+// @Router       /quizzes/{id}/{action} [put]
+// ApproveRejectQuiz handles quiz approval/rejection via URL parameter (professors only)
+func (h *QuizHandler) ApproveRejectQuiz(c *gin.Context) {
 	quizID := c.Param("id")
+	action := c.Param("action")
+
+	log.Printf("ApproveRejectQuiz: Request to %s quiz ID: %s", action, quizID)
+
 	objectID, err := primitive.ObjectIDFromHex(quizID)
 	if err != nil {
+		log.Printf("ApproveRejectQuiz: Invalid quiz ID format: %s - %v", quizID, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quiz ID"})
 		return
 	}
 
-	var req ApproveQuizRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if req.Status != models.StatusApproved && req.Status != models.StatusRejected {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Status must be 'approved' or 'rejected'"})
+	var status models.QuizStatus
+	switch action {
+	case "approve":
+		status = models.StatusApproved
+	case "reject":
+		status = models.StatusRejected
+	default:
+		log.Printf("ApproveRejectQuiz: Invalid action for quiz %s: %s", quizID, action)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Action must be 'approve' or 'reject'"})
 		return
 	}
 
@@ -293,7 +313,7 @@ func (h *QuizHandler) ApproveQuiz(c *gin.Context) {
 	now := time.Now()
 	update := bson.M{
 		"$set": bson.M{
-			"status":      req.Status,
+			"status":      status,
 			"approved_by": approverID,
 			"approved_at": now,
 			"updated_at":  now,
@@ -302,12 +322,15 @@ func (h *QuizHandler) ApproveQuiz(c *gin.Context) {
 
 	result, err := h.collection.UpdateOne(ctx, bson.M{"_id": objectID}, update)
 	if err != nil || result.MatchedCount == 0 {
+		log.Printf("ApproveRejectQuiz: Failed to %s quiz %s - %v, matched: %d", action, quizID, err, result.MatchedCount)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Quiz status updated successfully"})
+	log.Printf("ApproveRejectQuiz: Successfully %sd quiz %s", action, quizID)
+	c.JSON(http.StatusOK, gin.H{"message": "Quiz " + action + "d successfully"})
 }
+
 
 // DeleteQuiz godoc
 // @Summary      Delete a quiz
@@ -325,8 +348,10 @@ func (h *QuizHandler) ApproveQuiz(c *gin.Context) {
 // @Router       /quizzes/{id} [delete]
 func (h *QuizHandler) DeleteQuiz(c *gin.Context) {
 	quizID := c.Param("id")
+	log.Printf("DeleteQuiz: Request to delete quiz ID: %s", quizID)
 	objectID, err := primitive.ObjectIDFromHex(quizID)
 	if err != nil {
+		log.Printf("DeleteQuiz: Invalid quiz ID format: %s - %v", quizID, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quiz ID"})
 		return
 	}
@@ -341,21 +366,25 @@ func (h *QuizHandler) DeleteQuiz(c *gin.Context) {
 	var quiz models.Quiz
 	err = h.collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&quiz)
 	if err != nil {
+		log.Printf("DeleteQuiz: Quiz not found: %s - %v", quizID, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
 		return
 	}
 
 	// Only creator or professors can delete
 	if userRole.(models.UserRole) != models.RoleProfessor && quiz.CreatorID != userID.(primitive.ObjectID) {
+		log.Printf("DeleteQuiz: Permission denied for user %v to delete quiz %s (creator: %v, role: %v)", userID, quizID, quiz.CreatorID, userRole)
 		c.JSON(http.StatusForbidden, gin.H{"error": "You don't have permission to delete this quiz"})
 		return
 	}
 
 	_, err = h.collection.DeleteOne(ctx, bson.M{"_id": objectID})
 	if err != nil {
+		log.Printf("DeleteQuiz: Failed to delete quiz %s - %v", quizID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete quiz"})
 		return
 	}
 
+	log.Printf("DeleteQuiz: Successfully deleted quiz %s", quizID)
 	c.JSON(http.StatusOK, gin.H{"message": "Quiz deleted successfully"})
 }

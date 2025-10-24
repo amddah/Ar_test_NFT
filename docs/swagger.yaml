@@ -984,15 +984,23 @@ paths:
       summary: Get quiz by ID
       tags:
       - quizzes
-  /quizzes/{id}/approve:
+  /quizzes/{id}/{action}:
     put:
       consumes:
       - application/json
-      description: Approve or reject a pending quiz (professors only)
+      description: Approve or reject a pending quiz (professors only) using URL parameter
       parameters:
       - description: Quiz ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: Action (approve or reject)
+        enum:
+        - approve
+        - reject
+        in: path
+        name: action
         required: true
         type: string
       produces:
@@ -1001,7 +1009,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Quiz'
+            additionalProperties:
+              type: string
+            type: object
         "400":
           description: Bad Request
           schema:

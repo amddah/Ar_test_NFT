@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -20,6 +21,7 @@ type Config struct {
 	JWTSecret         string
 	ServerPort        string
 	ExternalCourseAPI string
+	LogDir            string
 }
 
 var AppConfig *Config
@@ -35,6 +37,7 @@ func LoadConfig() {
 		JWTSecret:         getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
 		ServerPort:        getEnv("SERVER_PORT", "8080"),
 		ExternalCourseAPI: getEnv("EXTERNAL_COURSE_API", "http://localhost:9000/api/v1"),
+		LogDir:            getEnv("LOG_DIR", "var/logs"),
 	}
 }
 
@@ -75,4 +78,25 @@ func ConnectDatabase() error {
 // GetCollection returns a MongoDB collection
 func GetCollection(collectionName string) *mongo.Collection {
 	return DB.Collection(collectionName)
+}
+
+// SetupLogger sets up logging to a daily rotating file
+func SetupLogger() error {
+	// Ensure log directory exists
+	if err := os.MkdirAll(AppConfig.LogDir, 0755); err != nil {
+		return fmt.Errorf("failed to create log directory: %w", err)
+	}
+
+	// Create log file with current date
+	logFileName := filepath.Join(AppConfig.LogDir, time.Now().Format("2006-01-02")+".log")
+	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		return fmt.Errorf("failed to open log file: %w", err)
+	}
+
+	// Set log output to file and also to stdout
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	return nil
 }

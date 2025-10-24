@@ -948,14 +948,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/quizzes/{id}/approve": {
+        "/quizzes/{id}/{action}": {
             "put": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Approve or reject a pending quiz (professors only)",
+                "description": "Approve or reject a pending quiz (professors only) using URL parameter",
                 "consumes": [
                     "application/json"
                 ],
@@ -973,13 +973,27 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            "approve",
+                            "reject"
+                        ],
+                        "type": "string",
+                        "description": "Action (approve or reject)",
+                        "name": "action",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Quiz"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "400": {
